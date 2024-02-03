@@ -1,8 +1,7 @@
+import 'package:adv_basics/question.dart';
 import 'package:flutter/material.dart';
-
-import 'package:adv_basics/start_screen.dart';
-import 'package:adv_basics/questions_screen.dart';
-import 'package:adv_basics/data/questions.dart';
+import 'package:adv_basics/start.dart';
+import 'package:adv_basics/data/qstns.dart';
 import 'package:adv_basics/results_screen.dart';
 
 class Quiz extends StatefulWidget {
@@ -10,65 +9,61 @@ class Quiz extends StatefulWidget {
 
   @override
   State<Quiz> createState() {
-    return _QuizState();
+    return _Quiz();
   }
 }
 
-class _QuizState extends State<Quiz> {
-  List<String> _selectedAnswers = [];
-  var _activeScreen = 'start-screen';
+class _Quiz extends State<Quiz> {
+  List<String> selectedAnswers = [];
+  var activeScreen = 'start-screen';
 
-  void _switchScreen() {
+  void Restart() {
+    selectedAnswers = [];
     setState(() {
-      _activeScreen = 'questions-screen';
+      activeScreen = 'Question-screen';
     });
   }
 
-  void _chooseAnswer(String answer) {
-    _selectedAnswers.add(answer);
+  void switchscreen() {
+    setState(() {
+      activeScreen = 'Question-screen';
+    });
+  }
 
-    if (_selectedAnswers.length == questions.length) {
+  void chooseAnswer(String answer) {
+    selectedAnswers.add(answer);
+
+    if (selectedAnswers.length == questions.length) {
       setState(() {
-        _activeScreen = 'results-screen';
+        activeScreen = 'results-screen';
       });
     }
   }
 
-  void restartQuiz() {
-    setState(() {
-      _selectedAnswers = [];
-      _activeScreen = 'questions-screen';
-    });
-  }
-
   @override
   Widget build(context) {
-    Widget screenWidget = StartScreen(_switchScreen);
+    Widget screenWidget = Startscreen(switchscreen);
 
-    if (_activeScreen == 'questions-screen') {
-      screenWidget = QuestionsScreen(
-        onSelectAnswer: _chooseAnswer,
+    if (activeScreen == 'Question-screen') {
+      screenWidget = QuestionScreen(OnselectAnswer: chooseAnswer);
+    } else if (activeScreen == 'results-screen') {
+      screenWidget = ResultScreen(
+        chosenAnswers: selectedAnswers,
+        Restart: Restart,
       );
     }
-
-    if (_activeScreen == 'results-screen') {
-      screenWidget = ResultsScreen(
-        chosenAnswers: _selectedAnswers,
-        onRestart: restartQuiz,
-      );
-    }
-
     return MaterialApp(
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 78, 13, 151),
-                Color.fromARGB(255, 107, 15, 168),
-              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(255, 90, 1, 206),
+                Color.fromARGB(255, 90, 1, 112)
+              ],
             ),
           ),
           child: screenWidget,
